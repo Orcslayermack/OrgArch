@@ -1,5 +1,6 @@
 .data
 prompt:		.asciiz "Please enter a number. \n"
+
 .text
 # print prompt
 # System.out.println("Please enter a number.");
@@ -22,7 +23,7 @@ move $t0, $v0
 sw $t0, 0($sp)
 #2) Pass arguments (#2)
 # first four are passed into $a0-$a3
-Remaining are passed on the stack in called procedure's frame.  
+# the Remaining are passed on the stack in called procedure's frame.  
 move $a0, $t0
 #3) Execute a jal instruction (#3)
 # Jumps to callee's first instruction
@@ -43,13 +44,14 @@ subu $sp,$sp,12
 # $s0-$s7, $ra
 sw $ra, 0($sp)
 #*****************Start Callee Responsibilities start******************
+
 bne $a0, 1, recursiveCase
 
 #*****************Start Callee Responsibilities end******************
 #6) Put return values in $v0 (#6)
-li #v0, 1
+li $v0, 1
 #7) Restore callee saved registers that were saved on entry (#7)
-lw #ra, 0($sp)
+lw $ra, 0($sp)
 #8) Pop the stack frame (#8)
 addiu $sp, $sp, 12
 #9) Return by jumping to addres sin $ra (#9)
@@ -83,37 +85,18 @@ mult $v0, $a0
 #6) Put return values in $v0 (#6)
 mflo $v0
 #7) Restore callee saved registers that were saved on entry (#7)
-lw #ra, 0($sp)
+lw $ra, 0($sp)
 #8) Pop the stack frame (#8)
 addiu $sp, $sp, 12
 #9) Return by jumping to addres sin $ra (#9)
 jr $ra
 #*****************End Callee Responsibilities end******************
 
-
-
-
-
-
-
-
-
-
-
 # initalize f
 # int f = 1;
 li $t1, 1
 
-
-
-
-
-
 j factorialRecursive
-
-
-
-
 
 end:
 # System.out.printlnl( f );
