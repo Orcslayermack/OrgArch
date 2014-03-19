@@ -1,6 +1,7 @@
 .data
 prompt:		.asciiz "Please enter a number to evaluate: \n"
 str:		.asciiz "The factorial of your number is: "
+mult:		.asciiz "Multiplying\n"
 .text
 main:
 # print prompt
@@ -12,52 +13,62 @@ syscall
 move $t0, $v0 # store parameter in $t0
 
 factorial:
-# 1-3
-sw $t0, 0($sp) 		# store parameter
-move $a0, $t0 		# pass parameter
-jal if	 		# jal
-j endFactorial
+#1	Save caller saved registers
+sw $t0, 4($sp) 		
+sw $t1, 8($sp)		
+#2	Pass Arguments
+move $a0, $t0 		
+#3	Execute a jal instruction
+jal if	 		
 
+#END
+j end
 
-#4-5
 if:
-subu $sp, $sp, 12	# Push the stack 
+#4 	Allocate memory for the frame by subtracting the frame's size from the stack pointer
+subu $sp, $sp, 32	# Push the stack 
+#5 	Save callee-saved registers in the frame
 sw $ra, 0($sp)		# store return address to stack pointer
 
 # case 1
-ble $a0, 0, endFactorial
-
+ble $a0, 1, endFactorial
 # case 2
-# 1-3 steps
-sub $t0, $t0, 1
+lw $t0, 0($sp)
+sub $t0, $a0, 1
 jal factorial
 
-# magic
+# magic aaaaand this never executes
 mult $a0, $v0
 mflo $t0
 
+# test
+move $t0, $v0
+li $v0, 4
+la $a0, str
+syscall
 
-j endFactorial
+
+
 # $t0 will be the return variable n
-#6-9
 endFactorial:
+#6 	Put return values in $v0
 move $v0, $t0
+#7	Restore callee saved registers that were saved on entry
 lw $ra, 0($sp)
-addu $sp, $sp, 12 	# Pop the stack
+lw $t0, 4($sp)
+lw $t1, 8($sp)
+#8	Pop the stack frame
+addu $sp, $sp, 32 	
+#9	Return by jumping to address in $ra
 jr $ra
 
-
-j end
-
-
-
 end:
+move $t0, $v0
 li $v0, 4
 la $a0, str
 syscall
 li $v0, 1
 move $a0, $t0
 syscall
-
 li $v0, 10
 syscall
