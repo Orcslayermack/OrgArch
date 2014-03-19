@@ -92,17 +92,7 @@ addiu $sp, $sp, 12
 jr $ra
 #*****************End Callee Responsibilities end******************
 
-# initalize f
-# int f = 1;
-li $t1, 1
-
-j factorialRecursive
-
 end:
-# System.out.printlnl( f );
-li $v0, 1
-move $a0, $t1
-syscall 
 # gracefully close the program
 li $v0, 10
 syscall
